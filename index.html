@@ -1,0 +1,437 @@
+
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Web Technology Project">
+	<meta name="author" content="MOHAMAD AZRULAMIN BIN MOHAMAD YUSOF">
+	<meta name="author" content="MUHAMMAD SALMAN BIN MOHD SHAH">
+	<meta name="author" content="MOHAMAD ASYRAF BIN OSMAN">
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="favicon.png">
+
+	<!-- Bootstrap CSS -->
+	<!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+	<title>Marrybrown Online Ordering System</title>
+	<!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+
+<body ng-app="custOdr" ng-controller="custOdrCtrl" data-ng-init="init()">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+		<div class="container">
+			<a class="navbar-brand" href=""><img src="logo_white.png" class="img-fluid" style="max-height: 40px"></a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarColor01">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link active show" href="">Home<span class="sr-only">(current)</span></a>
+						<!-- <a class="nav-link active show" data-toggle="tab" href="#order">New Order <span class="sr-only">(current)</span></a> -->
+					</li>
+					<!-- <li class="nav-item">
+						<a class="nav-link" data-toggle="tab" href="#history">Order History</a>
+					</li> -->
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<br />
+	<div class="container">
+		<div class="card border-primary mb-3">
+			<div class="card-header">
+				<i class="fas fa-plus-circle">&nbsp;</i>Add New Order
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="table-responsive text-center">
+							<img src="menu.gif" width="500" height="487" alt="Menu" usemap="#menumap">
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-md-12" id="odrForm" ng-if="show">
+								<form ng-submit="doAddUpdate()">
+									<div class="table-responsive">
+										<table width="100%" class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th colspan="4">Order Form</th>
+												</tr>
+												<tr>
+													<th style="width: 40%">Item</th>
+													<th style="width: 20%">Price</th>
+													<th style="width: 20%">Qty</th>
+													<th style="width: 20%">Qty * Price</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr></tr>
+												<tr ng-repeat="odr in odrList">
+													<td>{{ odr.item }} -<button ng-click="doDelete(odr.item)" type="button" class="btn btn-link" title="Delete"><i class='fas fa-trash-alt'></i></button></td>
+													<td style="text-align: center;">{{ odr.price | number:2 }}</td>
+													<td style="text-align: center;">{{ odr.qty }}</td>
+													<td style="text-align: right;">{{ odr.price * odr.qty | number:2 }}</td>
+												</tr>
+											</tbody>
+											<tfoot class="thead-light">
+												<tr>
+													<th style="text-align: right;" colspan="3">TOTAL (RM)</th>
+													<th style="text-align: right;">{{ totalPrice | number:2 }}</th>
+												</tr>
+												<tr>
+													<td>{{ menu.item }}</td>
+													<td style="text-align: center;">{{ menu.price | number:2 }}</td>
+													<td>
+														<input type="number" ng-model="menu.qty" ng-required="required" size="3" style="text-align:right" class="form-control" min="1" max="100">
+													</td>
+													<td>
+														<button class="btn btn-primary">Add/Update</button>
+													</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+								</form>
+		
+								<br>
+		
+								<form ng-submit="confirmOrder()">
+									<div class="table-responsive">
+										<table width="100%" class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th colspan="2">Customer Form</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<th align="right">Name:</th>
+													<td><input type="text" ng-model="cust.name" ng-required="required" class="form-control"></td>
+												</tr>
+												<tr>
+													<th align="right" valign="top">Address:</th>
+													<td>
+														<input type="text" ng-model="cust.address" ng-required="required" class="form-control">
+														<span style="font-size: 10pt;">(Apartment/building/unit no., street address)</span>
+													</td>
+												</tr>
+												<tr>
+													<th align="right">Area:</th>
+													<td>
+														<select ng-model="cust.area" ng-required="required" ng-options="x for x in areas" class="form-control"></select>
+													</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<th colspan="2" class="text-center">
+														<button class="btn btn-primary">Save Order</button>
+													</th>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+								</form>    
+		
+							</div>
+							<div class="col-md-12" id="odrConfirm" ng-if="!show">
+								<h2>Save Customer Order</h2>
+								<div class="table-responsive">
+									<table width="100%" class="table table-striped table-bordered table-hover">
+										<thead>
+											<tr>
+												<th colspan="4">CUSTOMER INFO</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td colspan="4">
+													<b>{{ cust.name }}</b> <br/>
+													{{ cust.address }} <br/>
+													{{ cust.area }}
+												</td>
+											</tr>
+											<tr>
+												<th colspan="4">ORDER ITEM</th>
+											</tr>
+											<tr>
+												<th>Item</th>
+												<th>Price</th>
+												<th>Qty</th>
+												<th>Qty * Price</th>
+											</tr>
+											<tr ng-repeat="odr in odrList">
+												<td>{{ odr.item }}</td>
+												<td style="text-align: center;">{{ odr.price | number:2 }}</td>
+												<td style="text-align: center;">{{ odr.qty }}</td>
+												<td style="text-align: right;">{{ odr.price * odr.qty | number:2 }}</td>
+											</tr>
+										</tbody>
+										<tfoot>
+											<tr>
+												<th colspan="4" class="text-center">
+													<button ng-click="continueOrder()" class="btn btn-primary">Continue</button>
+													<button ng-click="cancelOrder()" class="btn btn-primary">Cancel</button>
+												</td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="card border-primary mb-3">
+			<div class="card-header">
+				<i class="fas fa-list-alt">&nbsp;</i>Order History
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="table-responsive">
+							<table class="table table-striped table-bordered table-hover">
+								<thead>
+									<th style="text-align: center">No.</th>
+									<th>Name</th>
+									<th>Address</th>
+									<th>Area</th>
+									<th>Item</th>
+									<th style="text-align: center">Qty</th>
+									<th style="text-align: center">Subtotal (RM)</th>
+								</thead>
+								<tbody>
+									<tr></tr>
+									<tr ng-repeat="list in historyList">
+										<td style="text-align: center">{{ $index + 1 }}.</td>
+										<td>{{ list.cust.name }} -<button ng-click="delete(list.cust.id_customer)" type="button" class="btn btn-link" title="Delete History"><i class='fas fa-trash-alt'></i></button></td>
+										<td>{{ list.cust.address }}</td>
+										<td>{{ list.cust.area }}</td>
+										<td>
+											<span ng-repeat="order in list.order">
+												{{ order.item }}<br>
+											</span>
+										</td>
+										<td style="text-align: center">
+											<span ng-repeat="order in list.order">
+												{{ order.qty }}<br>
+											</span>
+										</td>							
+										<td style="text-align: right">
+											<span ng-repeat="order in list.order">
+												{{ order.price * order.qty | number:2 }}<br>
+											</span>
+											<hr style="margin-top: 7px; margin-bottom: 7px">
+											<span>
+												<b>{{ calcSubTotal(list.cust.id_customer) | number:2 }}</b>
+											</span>
+										</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<th colspan="6" style="text-align: right">Total Sales (RM)</th>
+									<th style="text-align: right">{{ calcSale() | number:2 }}</th>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br />
+		<p>Group Members: <a href="">MOHAMAD AZRULAMIN BIN MOHAMAD YUSOF</a>, <a href="">MUHAMMAD SALMAN BIN MOHD SHAH</a> and <a href="">MOHAMAD ASYRAF BIN OSMAN</a>.</p>
+	</div>
+
+	<map name="menumap">
+		<area shape="rect" coords="0,138,23,154" alt="Chicken Burger"
+		ng-click="chooseItem('Chicken Burger', 8.8);">
+		<area shape="rect" coords="128,138,147,154" alt="Hotouch Burger"
+		ng-click="chooseItem('Hotouch Burger', 11.1);">
+		<area shape="rect" coords="252,138,272,154" alt="Tower Burger"
+		ng-click="chooseItem('Tower Burger', 13.8);">
+		<area shape="rect" coords="378,138,395,154" alt="Fish Fillet Burger"
+		ng-click="chooseItem('Fish Fillet Burger', 11.25);">
+
+		<area shape="rect" coords="0,282,23,298" alt="Lucky Plate"
+		ng-click="chooseItem('Lucky Plate', 11.90);">
+		<area shape="rect" coords="128,282,147,298" alt="Chick-A-Licious"
+		ng-click="chooseItem('Chick-A-Licious', 13.30);">
+		<area shape="rect" coords="252,282,272,298" alt="Chick-A-Mix"
+		ng-click="chooseItem('Chick-A-Mix', 11.90);">
+		<area shape="rect" coords="377,282,395,298" alt="Fish 'n' Chip"
+		ng-click="chooseItem('Fish n Chip', 13.90);">
+
+		<area shape="rect" coords="0,430,23,446" alt="Nasi Marrybrown"
+		ng-click="chooseItem('Nasi Marrybrown', 9.90);">
+		<area shape="rect" coords="128,430,147,446" alt="Nasi Ayam MB"
+		ng-click="chooseItem('Nasi Ayam MB', 10.30);">
+		<area shape="rect" coords="252,430,272,446" alt="Mi Kari MB"
+		ng-click="chooseItem('Mi Kari MB', 9.50);">
+		<area shape="rect" coords="335,430,354,446" alt="Chicken Porridge"
+		ng-click="chooseItem('Chicken Porridge', 6.50);">
+		<area shape="rect" coords="418,430,436,446" alt="Seafood Porridge"
+		ng-click="chooseItem('Seafood Porridge', 7.50);">
+	</map>
+</body>
+<script>
+	var url = "http://gmm-student.fc.utm.my/~mabnmy2/SCSJ-4483/order.php";
+	var app = angular.module('custOdr', []).filter('to_trusted', ['$sce', function($sce){
+		return function(text) {
+			return $sce.trustAsHtml(text);
+		};
+	}]);
+
+	app.controller('custOdrCtrl', function ($scope, $http) {
+		$scope.menu = {};
+		$scope.odrList = [];
+		$scope.odrKeys = [];
+		$scope.historyList = [];
+		$scope.totalPrice = 0;
+		$scope.show = true;
+		$scope.required = true;
+
+		$scope.init = function () {
+			$scope.list();
+		};
+
+		$scope.cust = {
+			"name": "Lionel Messi",
+			"address": "Block L07, Jalan Merbau, KTHO",
+			"area": "UTM"
+		};
+
+		$scope.areas = ["", "Bandar Baru Kangkar Pulai", "Kangkar Pulai", "Pulai Emas", "Pulai Flora",
+		"Pulai Indah", "Sri Pulai", "Sri Pulai Perdana", "Sri Pulai Perdana 2", "UTM"
+		];
+
+		$scope.chooseItem = function (item, price) {
+			//alert("Choose " + item + " - " + price);
+			$scope.menu.item = item;
+			$scope.menu.price = price;
+			$scope.menu.qty = 1;
+		};
+
+		$scope.doAddUpdate = function () {
+			if ($scope.menu.item != null) {
+				var idx = $scope.odrKeys.indexOf($scope.menu.item);
+
+				if (idx < 0) {
+					// Add order item
+					$scope.odrList.push({ "item": $scope.menu.item, "price": $scope.menu.price, "qty": $scope.menu.qty });
+					$scope.odrKeys.push($scope.menu.item);
+					$scope.totalPrice = $scope.totalPrice + ($scope.menu.price * $scope.menu.qty);
+
+				} else {
+					// Update order item
+					//alert("Update order item at index " + idx);
+					$scope.totalPrice = $scope.totalPrice - ($scope.menu.price * $scope.odrList[idx].qty);
+					$scope.odrList[idx].qty = $scope.menu.qty;
+					$scope.totalPrice = $scope.totalPrice + ($scope.menu.price * $scope.menu.qty);
+				}
+			} else {
+				alert("Please choose menu");
+			}
+		};
+
+		$scope.doDelete = function (item) {
+			var idx = $scope.odrKeys.indexOf(item);
+
+			alert("Delete " + item + " at index " + idx);
+
+			if (idx > -1) {
+				// Update $scope.totalPrice
+				$scope.totalPrice = $scope.totalPrice - ($scope.odrList[idx].price * $scope.odrList[idx].qty);
+
+				// Remove/delete item from $scope.odrList and $scope.odrKeys
+				$scope.odrList.splice(idx, 1);
+				$scope.odrKeys.splice(idx, 1);
+			}
+		};
+
+		$scope.confirmOrder = function () {
+			if ($scope.odrList.length != 0){
+				$scope.show = false;
+			}
+			else {
+				alert("Please add at least 1 menu");
+			}
+		};
+
+		$scope.list = function () {
+			$http.get(url).then(function(response) {
+				console.log(response.data);
+				$scope.historyList = response.data;
+				$scope.calcSale();
+			});
+		};
+
+		$scope.calcSubTotal = function (id) {
+			var subTotal = 0 ;
+			for (var i=0; i<$scope.historyList.length; i++ ){
+				if ($scope.historyList[i].cust.id_customer == id)
+				{
+					for (var j=0; j<$scope.historyList[i].order.length; j++ ){
+						subTotal += ($scope.historyList[i].order[j].price * $scope.historyList[i].order[j].qty);
+					}
+				}
+			}
+			return subTotal;
+		}
+
+		$scope.calcSale = function () {
+			var totalSale = 0;
+			for (var i=0; i<$scope.historyList.length; i++ ){
+				for (var j=0; j<$scope.historyList[i].order.length; j++ ){
+					totalSale += ($scope.historyList[i].order[j].price * $scope.historyList[i].order[j].qty);
+				}
+			}
+			return totalSale;
+		};
+
+		$scope.delete = function (id) {
+			$http.get(url+"?id="+id).then(function(response) {
+				console.log(response.data);
+				$scope.list();
+			});
+		};
+
+		$scope.continueOrder = function () {
+			// Display current form data in JSON format
+			var action = {'action':'submit'};
+			var json_array = [$scope.cust, $scope.odrList, action];
+			var param = angular.toJson(json_array);
+			$http.post(url, param).then(function(response, error) {
+				console.log(response.data);
+				$scope.list();
+			});
+			alert("Save the following JSON structure into database: \n"+ param);
+
+			// Reset all model/data referred by $scope instance
+			$scope.odrList = [];
+			$scope.odrKeys = [];
+			$scope.menu = {};
+			$scope.totalPrice = 0;
+			$scope.cust = {};
+			$scope.cust.area = "UTM";
+			$scope.show = true;
+		};
+
+		$scope.cancelOrder = function () {
+			$scope.show = true;
+		};
+	});
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.12/css/all.css" integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9" crossorigin="anonymous">
+</html>
